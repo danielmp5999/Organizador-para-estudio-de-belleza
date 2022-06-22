@@ -1,0 +1,197 @@
+Sub AddService()
+    On Error Resume Next
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim Pregunta As Byte
+    Dim cont As Integer
+        
+    Set HojaDatos = ThisWorkbook.Sheets("AgregarVenta")
+    Set Tabla = HojaDatos.ListObjects("Servicios")
+    Set NuevaFila = Tabla.ListRows.Add
+    
+    cont = Hoja7.Range("I8").Value
+    cont = cont + 1
+    Hoja7.Range("I8") = cont
+    
+    With NuevaFila
+        .Range(1) = cont
+        .Range(2) = Hoja7.Range("D7").Value
+        .Range(3) = "Elije"
+        .Range(4) = Hoja7.Range("F7").Value
+        .Range(5) = "=SI.ND(BUSCARV(E(6+cont);Servicios!$B$2:$C$33;2;FALSO);0)"
+    End With
+    
+End Sub
+Sub Prueba()
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim cont As Integer
+        
+    Set HojaDatos = ThisWorkbook.Sheets("AgregarVenta")
+    Set Tabla = HojaDatos.ListObjects("Servicios")
+    
+    cont = Hoja7.Range("I8").Value
+    cont = cont + 1
+    Hoja7.Range("I8") = cont
+    
+End Sub
+Sub RemoveService()
+    On Error Resume Next
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim Pregunta As Byte
+    Dim cont As Integer
+        
+    Set HojaDatos = ThisWorkbook.Sheets("AgregarVenta")
+    Set Tabla = HojaDatos.ListObjects("Servicios")
+    
+    cont = Hoja7.Range("I8").Value
+    
+    If (cont = 1) Then
+        MsgBox "Se requiere minimo un servicio no sea necia", vbInformation
+    Else
+        Tabla.ListRows(cont).Delete
+    
+        cont = cont - 1
+        Hoja7.Range("I8") = cont
+    
+    End If
+    
+    
+    
+End Sub
+Sub CleanAllSold()
+    Dim buscaClientas As String
+    
+    'buscaClientas = "=SI.ND(BUSCARV(I4;TablaClientas[[Telefono]:[Nombre]];2;FALSO);" & Chr(34) & "NoRegistro" & Chr(34) & ")"
+    
+    Hoja7.Range("$E$4") = "=NOW()"
+    Hoja7.Range("G4") = "=NOW()"
+    Hoja7.Range("I4").ClearContents
+    'Hoja7.Range("K4").ClearContents
+    'Hoja7.Range("K4") = buscaClientas
+    Hoja7.Range("I6").ClearContents
+    Hoja7.Range("K6") = "-"
+    
+    'Hoja7.Range("K4") = "=SI.ND(BUSCARV(I4;Clientas!$B$2:$C$50;2;FALSO);0)"
+    
+    
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim Pregunta As Byte
+    Dim cont As Integer
+    On Error Resume Next
+    
+    Set HojaDatos = ThisWorkbook.Sheets("AgregarVenta")
+    Set Tabla = HojaDatos.ListObjects("Servicios")
+    
+    cont = Hoja7.Range("I8").Value
+    
+    If (cont = 1) Then
+        Hoja7.Range("E7") = "Elije"
+    Else
+        For i = 1 To cont - 1
+            Tabla.ListRows(cont).Delete
+    
+            cont = cont - 1
+            Hoja7.Range("I8") = cont
+        Next i
+        Hoja7.Range("E7") = "Elije"
+    
+    End If
+    
+End Sub
+Sub SaveService()
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim Pregunta As Byte
+    Dim aux As Integer
+    Dim text1 As String
+    Dim text2 As String
+    Dim ValorEncontrado As Range
+    
+    Set HojaDatos = ThisWorkbook.Sheets("Ventas")
+    Set Tabla = HojaDatos.ListObjects("TablaVentas")
+    Set NuevaFila = Tabla.ListRows.Add
+    On Error Resume Next
+    
+    cont = Hoja7.Range("I8").Value
+    datoABuscar = Hoja7.Range("I4").Value
+    
+    With NuevaFila
+        .Range(1) = Hoja7.Range("E4").Value
+        .Range(2) = Hoja7.Range("G4").Value
+        .Range(3) = Hoja7.Range("I4").Value
+        .Range(4) = Hoja7.Range("K4").Value
+        .Range(5) = Hoja7.Range("I6").Value
+        .Range(6) = Hoja7.Range("K6").Value
+        If cont = 1 Then
+            .Range(7) = Hoja7.Range("E7").Value
+            .Range(8) = Hoja7.Range("G7").Value
+        Else
+            .Range(7) = Hoja7.Range("E7").Value
+            .Range(8) = Hoja7.Range("G7").Value
+            For i = 1 To cont - 1
+                aux = 7 + i
+                text1 = aux
+                
+                Set SubNuevaFila = Tabla.ListRows.Add
+                With SubNuevaFila
+                    text2 = "E" + text1
+                    .Range(7) = Hoja7.Range(text2).Value
+                    text2 = "G" + text1
+                    .Range(8) = Hoja7.Range(text2).Value
+                End With
+                
+            Next i
+        End If
+           
+    End With
+    
+    Call VisitsClientIncreaseValue
+    
+    Call CleanAllSold
+    MsgBox "Se a guardado exitosamente y se a limpiado el registro", vbInformation
+    
+End Sub
+
+Sub VisitsClientIncreaseValue()
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim ValorEncontrado As Range
+    Dim datoABuscar As String
+    Dim visitas As Integer
+    Dim indexFounding As Integer
+    
+    Set HojaDatos = ThisWorkbook.Sheets("Clientas")
+    Set Tabla = HojaDatos.ListObjects("TablaClientas")
+    Name = Hoja7.Range("K4").Value
+    datoABuscar = Hoja7.Range("I4").Value
+    dat = Hoja7.Range("E4").Value
+    
+    Set ValorEncontrado = Tabla.DataBodyRange.Columns(2).Find(datoABuscar, LookAt:=xlWhole)
+       
+    If Not ValorEncontrado Is Nothing Then
+        'MsgBox "Valor encontrado en fila " & ValorEncontrado.Row
+        'Se fija el valor en 5 porque la columna 5 pertenece a las visitas
+        indexFounding = ValorEncontrado.Row - 1
+        visitas = Tabla.Range(ValorEncontrado.Row, 5)
+        visitas = visitas + 1
+        With Tabla.ListRows(indexFounding)
+            .Range(5) = visitas
+            .Range(6) = dat
+        End With
+        MsgBox "Exito al incrmentar visita. Total de visitas de " & Name & ": " & visitas
+        'Tabla.ListRows(ValorEncontrado.Row).Range(5) = visitas
+                
+    Else
+        
+        MsgBox "Ojo, el cliente no se encontró, no se contabilizará la visita"
+    End If
+    
+End Sub
