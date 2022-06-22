@@ -1,0 +1,27 @@
+Sub AltaGasto()
+    Dim HojaDatos As Worksheet
+    Dim Tabla As ListObject
+    Dim NuevaFila As ListRow
+    Dim Pregunta As Byte
+    
+    Set HojaDatos = ThisWorkbook.Sheets("Gastos")
+    Set Tabla = HojaDatos.ListObjects("TablaDatos")
+    Set NuevaFila = Tabla.ListRows.Add
+    
+    With NuevaFila
+        .Range(1) = Hoja6.Range("C3").Value
+        .Range(2) = Hoja6.Range("E3").Value
+        .Range(3) = Hoja6.Range("E5").Value
+    End With
+    
+    MsgBox "Se guardaron los datos en Tabla", vbInformation
+    
+    Pregunta = MsgBox("Deseas limpiar el Formulario?", vbYesNo + vbQuestion)
+    
+    If Pregunta = vbNo Then Exit Sub
+    
+    'Borramos campos del Formulario
+    Hoja6.Range("C3").ClearContents
+    Hoja6.Range("E3").ClearContents
+    Hoja6.Range("E5") = "=Now()"
+End Sub
